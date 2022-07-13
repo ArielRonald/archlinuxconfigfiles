@@ -1,0 +1,26 @@
+tmux new -s "Demo"  # crea una nueva sesion tmux
+prefix # combinacion teclas ctrl + b
+
+ctrl + b + , # rename window
+ctrl + b + " # divide la ventana de forma horizontal
+ctrl + b + % # divide la ventana de forma vertical
+ctrl + b + x # elimina o cierra el panel actual
+
+ctrl + b + space # permite rotar los paneles
+ctrl + b + { # permite cambiar contenido de un panel a otro
+ctrl + b + } # cambia el contenido de un panel a otro inverso del }
+
+ctrl + b + ctrl + o # rotar los paneles en sentido inverso a las agujas del reloj
+
+ctrl + 1,2,3,4,5, # cambia de ventana por el identificador
+
+ctrl + b + m # modo resize
+
+ctrl + b + # flechas presionando ctrl # resize panel
+
+ctrl + b + ! # te lleva el contenido de un panel a una nueva ventana
+
+ctrl + b + : # compactar un contenido de una ventana origen a una destino - de izquierda a derecha
+	join-pane -s 1 -t 2 # command
+
+

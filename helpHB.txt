@@ -1,0 +1,98 @@
+LFI (Local File Inclusion)o
+	esta vulnerabilidad como su nombre lo dice , se trata de la 
+	inclusion de ficheros locales del sistema en cuestion
+	
+	como ejemplo en una pagina web vulnerable podemos
+		tratar de isncluir un fichero que todo sistema basado en linux
+	tiene con es el /etc/passwd o el archivo /etc/group
+	fichero de los usuarios del sistema y grupos existentes
+
+	con esto solo podemos visualizar los ficheros para filtrar podemos
+	hacer lo mismo pero ahora desde la terminal con la utilidad curl
+	
+	obtenemos lo mismo podemos filtar informacion relevante
+	como la shells que utilizan los usuario y su espacio de trabajo
+	con el comando siguiente:
+	
+	curl -s 'www.webbulnerable?data=/etc/passwd' | grep 'sh$'
+
+	podemos ir un poco mas halla y verificar tenemos lo necesario
+	para poder conectarnos mediante SSH
+
+	podria tratar de apuntar al directorio de trabajo del user mas lo siguiente
+	
+	en mi caso /home/arielronald/.ssh/id_rsa
+	podria tratar de ver esta clave la privada id_rsa
+	porque por ejmeplo si se le ha pasado sshcopy_id
+	a este par de claves igual es una clave autorizada de identidad
+	que me puede servir teniendola en posesion conectarme a la maquina mediante SSH
+	si proporcionar contrasena por ejemplo
+	de todas formas si estubiera protejida por contrasena
+	ya sabes que utilidades como sshtojhon
+	que nos permite obtener el hash equivalente para posteriormente
+	con jhon por fuerza bruta obtener el mismo, si es que es debil y 
+	esta en un diccionario tratar de obtenerrlos para luego conectarnos
+	a la maquina con esta clave id_rsa authorizada lo que pasa	
+	es que nos va a pedir la contrasena pero si ya la tenemos
+	pues ingresamos.
+
+	la idea en este punto es que se podria ir enumerando cosas
+	para ver si podemos sacar informacion relevante que vayamos a
+	utilizar para comprometer el sistema
+
+	por ejemplo se puede ver el archivo /proc/sched_debug
+		este fichero contiene los procesos que se estan ejecutando en fromt y en background
+
+
+	tambien se puede revisar el fichero /proc/net/fib_tre
+		este fichero contiene informacion de direcciones IP e interfaces de RED
+		curl -s 'http://localhost/example.php?file=/proc/net/fib_trie' | grep -i 'host local' -B 1 | grep -oP '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}' | sort -u
+		# realiza la peticion, filtra por 'host local', toma la lidenea superior con -B 1 y luegoo hace un filtro por expresion regular ''
+			y le hace un ordenamiento para que no se repitan
+
+
+	otra cosa que se podria revisar es el fichero /proc/net/tcp
+		este fichero contiene informacion referente a los puertos del equipo local que nos podrian a ser utiles un CSRF
+			que se vera mas adelante podemos utilizar el siguiente comando para ver los puertos
+				for port in $(curl -s 'http://localhost/example.php?file=/proc/net/tcp' | awk '{print $2}' | grep -v 'local' | awk '{print $2}' FS=':' | sort -u); do echo "[$port]-> Puerto $(echo "ibase=16; $port" | bc)"; done
+				
+				se hace un curl al fichero antes mesionado luego se toma el segundo argumento, se remueve informacion no relevante y se toma el segundo argumento utilzando como criterio de argumento el ":" se hace un sort
+				para eliminar elementos repetidos 
+
+				todo este comando nos retorna una lista de puertos que lo recorresmo con for para llevar los puertos de hexadecimal a decimal
+
+	podemos probar esta bulnerabilidad en la plataforma HackTheBox en la maquina Beep
+
+	para poder acceder a la pagina web del sistema de esta maquina es necesario hacer uso de un atecnica que se conoce como Directory path traversal
+	consiste en en ir directorios para atras la cantidad necesaria para acceder al fichero buscado
+		ejemplo http://www.dominio.com/?file=../../../../../etc/passwd
+
+	esto se hace por que hay cierta restriccion en el codigo al momento de incluir el contenido
+	
+	existe otra restriccion que consiste en concatenarle la extension del fichero a incluir
+		pero esto se puede burlar con el Null byte injection
+		
+		ejemplo: http://www.dominio.com/?file=/etc/passwd%00
+		se usa %00 al final del fichero a incluir para quitar la extension algunos servidores son 
+
+WRAPERS
+	los wrapers son enmboltorios que PHP incorpora en distintos protocolos tipo URL para trabajar con funciones dentro del sistema
+	por ejmplo el wraper file://path que me permite incluir archivos
+
+	existe otro wraper que sirve para visualizar el codigo fuente de una pagina de laso del servidor osea codigo php u otro asp.net
+	ejemplo: http://localhost/example.php?file=php://filter/convert.base64-encode/resource=example2.php
+	existen mas wrapers que se pueden buscar en Google
+
+
+LOG POISONING
+	esta vulnerabilidad consiste en ejecutar codigo de sistema utilizando PHP aprovechandonos de los logs de Apache el servidor
+		usando la cabecera o hader User-Agent 
+		ejemplo: curl -s -H "User-Agent: <?php system('whoami');?>" "http://localhost/example.php?file=/var/log/httpd/access_log"
+
+		es probable que solo algunos servidores sean vulnerablea a este araque , podrian ya estar parcheados
+		pero en algunos funciona
+
+		otro uso similar con log poisoning es hacer uso del log del servicio ssh para incrustar o injectar codigo PHP
+		como usuario SSH y actualizar el log del servicio SSH para ejecutar el codigo malicioso por ejmplo una shell reversa
+		es una combinacion de LFI y log poisoning
+	
