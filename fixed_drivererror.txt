@@ -1,0 +1,21 @@
+So I run the next command:
+LIBGL_ALWAYS_SOFTWARE=true GALLIUM_DRIVER=llvmpipe kitty
+and then kitty finally opens. The problem is that when I close the window I need to rerun the same command to be able to open it again.
+I have set the environmental variables in /etc/environment:
+
+LIBGL_ALWAYS_SOFTWARE=true
+
+GALLIUM_DRIVER=llvmpipe
+
+
+But nothing changes. I don't know hot to stabilise those values so every time I boot I can launch kitty.
+I also tried
+export LIBGL_ALWAYS_SOFTWARE=true
+and it works but when I reboot I'm facing the same issue again.
+I don't know what else I can do. Maybe I'm setting wrong the environmental variables.
+
+
+lspci | grep -i "vga"
+00:02.0 VGA compatible controller: VMware SVGA II Adapter
+
+link ref: https://github.com/archlinux/archinstall/issues/1104
